@@ -12,16 +12,16 @@ class CountryController extends Controller
 		return Response::success("Lütfen Giriş Yapınız");
 	}
 	function list(Request $request){
-		if($rows = get_brands( $request->all() )){
-			return Response::success("Marka Bilgileri", $rows);
+		if($rows = get_countries( $request->all() )){
+			return Response::success("Ülke Bilgileri", $rows);
 		}
-		return Response::failure("Marka Bulunamdı");
+		return Response::failure("Ülke Bulunamadı");
 	}
 	function get(Request $request, $id){
-		if($row = get_brand($id)){
-			return Response::success("Marka Bilgileri", $row);
+		if($row = get_country($id)){
+			return Response::success("Ülke Bilgileri", $row);
 		}
-		return Response::failure("Marka Bulunamdı");
+		return Response::failure("Ülke Bulunamadı");
 	}
 	function post(Request $request) {
 		$exception = '';
@@ -33,11 +33,11 @@ class CountryController extends Controller
 				'sort_order' => 'required|integer',
 				'state'      => 'required|boolean'
 			]);
-			$row = create_brand($fields);
+			$row = create_country($fields);
 			if($row){
-				return Response::success("Marka Oluşturuldu", $row);
+				return Response::success("Ülke Oluşturuldu", $row);
 			}
-			return Response::failure("Marka Oluşturulamadı");
+			return Response::failure("Ülke Oluşturulamadı");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
@@ -55,11 +55,11 @@ class CountryController extends Controller
 				'sort_order' => 'required|integer',
 				'state'      => 'required|boolean'
 			]);
-			$row = update_brand($id, $fields);
+			$row = update_country($id, $fields);
 			if($row){
-				return Response::success("Marka Güncellendi", $row);
+				return Response::success("Ülke Güncellendi", $row);
 			}
-			return Response::failure("Marka Güncellenemedi");
+			return Response::failure("Ülke Güncellenemedi");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
@@ -74,11 +74,11 @@ class CountryController extends Controller
 			if($row){
 				Brand::destroy($id);
 				BrandDescription::where('brand_id', $id)->delete();
-				return Response::success( "Marka silindi", $row);
+				return Response::success( "Ülke silindi", $row);
 			} else {
-				return Response::failure("Marka Bulunamadı");
+				return Response::failure("Ülke Bulunamadı");
 			}
-			return BrandResponse::failure("Marka Silinemedi");
+			return BrandResponse::failure("Ülke Silinemedi");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
