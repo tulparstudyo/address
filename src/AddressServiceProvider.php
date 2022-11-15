@@ -23,16 +23,16 @@ class AddressServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		Route::get('/address/countries', [CountryController::class, 'list']);
 		Route::get('/address/country', [CountryController::class, 'index']);
+		Route::get('/address/countries', [CountryController::class, 'list']);
 		Route::get('/address/country/{id}', [CountryController::class, 'get']);
 
-		Route::get('/address/cities/{country_id}', [CityController::class, 'list']);
 		Route::get('/address/city', [CityController::class, 'index']);
+		Route::get('/address/cities/{country_id}', [CityController::class, 'list']);
 		Route::get('/address/city/{id}', [CityController::class, 'get']);
 
-		Route::get('/address/districts', [DistrictController::class, 'list']);
 		Route::get('/address/district', [DistrictController::class, 'index']);
+		Route::get('/address/districts/{city_id}', [DistrictController::class, 'list']);
 		Route::get('/address/district/{id}', [DistrictController::class, 'get']);
 
 		Route::group(['middleware' => ['auth:sanctum']], function(){

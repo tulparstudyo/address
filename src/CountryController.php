@@ -5,7 +5,6 @@ use App\Http\Controllers\Controller;
 use Google\Exception;
 use Illuminate\Http\Request;
 
-
 class CountryController extends Controller
 {
 	function index(Request $request){
@@ -28,9 +27,7 @@ class CountryController extends Controller
 		try {
 			$fields = $request->validate([
 				'name'       => 'required|string|max:255',
-				'code'       => 'required|string|max:32|unique:brands',
-				'rate'       => 'required|integer',
-				'sort_order' => 'required|integer',
+				'code'       => 'required|string|max:32|unique:countries',
 				'state'      => 'required|boolean'
 			]);
 			$row = create_country($fields);
@@ -51,7 +48,6 @@ class CountryController extends Controller
 			$fields = $request->validate([
 				'name'       => 'required|string|max:255',
 				'code'       => 'required|string|max:32|unique:brands',
-				'rate'       => 'required|integer',
 				'sort_order' => 'required|integer',
 				'state'      => 'required|boolean'
 			]);
@@ -70,21 +66,15 @@ class CountryController extends Controller
 	function delete(Request $request, $id){
 		$exception = '';
 		try {
-			$row = Brand::where('id', $id)->get()->first();
-			if($row){
-				Brand::destroy($id);
-				BrandDescription::where('brand_id', $id)->delete();
-				return Response::success( "Ülke silindi", $row);
-			} else {
-				return Response::failure("Ülke Bulunamadı");
+			if( $row = delete_country($id)){
+				return Response::success("Ülke Silindi", $row);
 			}
-			return BrandResponse::failure("Ülke Silinemedi");
+			return Response::failure("Ülke Bulunamadı");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
 			$exception = $ex->getMessage();
 		}
-		return Response::exception( '$exception');
-
+		return Response::exception( $exception);
 	}
 }

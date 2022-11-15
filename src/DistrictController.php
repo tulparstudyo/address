@@ -5,39 +5,37 @@ use App\Http\Controllers\Controller;
 use Google\Exception;
 use Illuminate\Http\Request;
 
-
 class DistrictController extends Controller
 {
 	function index(Request $request){
 		return Response::success("Lütfen Giriş Yapınız");
 	}
-	function list(Request $request){
-		if($brands = get_brands( $request->all() )){
-			return Response::success("Marka Bilgileri", $brands);
+	function list(Request $request, $city_id){
+		if($rows = get_districts( $request->all(), $city_id)){
+			return Response::success("İlçe Bilgileri", $rows);
 		}
-		return Response::failure("Marka Bulunamdı");
+		return Response::failure("İlçe Bulunamadı");
 	}
 	function get(Request $request, $id){
-		if($brand = get_brand($id)){
-			return Response::success("Marka Bilgileri", $brand);
+		if($row = get_district($id)){
+			return Response::success("İlçe Bilgileri", $row);
 		}
-		return Response::failure("Marka Bulunamdı");
+		return Response::failure("İlçe Bulunamadı");
 	}
 	function post(Request $request) {
 		$exception = '';
 		try {
 			$fields = $request->validate([
+				'city_id'    => 'required|numeric',
 				'name'       => 'required|string|max:255',
-				'code'       => 'required|string|max:32|unique:brands',
-				'rate'       => 'required|integer',
-				'sort_order' => 'required|integer',
+				'code'       => 'required|string|max:32|unique:countries',
 				'state'      => 'required|boolean'
 			]);
-			$brand = create_brand($fields);
-			if($brand){
-				return Response::success("Marka Oluşturuldu", $brand);
+			$row = create_district($fields);
+			if($row){
+				return Response::success("İlçe Oluşturuldu", $row);
 			}
-			return Response::failure("Marka Oluşturulamadı");
+			return Response::failure("İlçe Oluşturulamadı");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
@@ -49,17 +47,17 @@ class DistrictController extends Controller
 		$exception = '';
 		try {
 			$fields = $request->validate([
+				'city_id'    => 'required|numeric',
 				'name'       => 'required|string|max:255',
 				'code'       => 'required|string|max:32|unique:brands',
-				'rate'       => 'required|integer',
 				'sort_order' => 'required|integer',
 				'state'      => 'required|boolean'
 			]);
-			$brand = update_brand($id, $fields);
-			if($brand){
-				return Response::success("Marka Güncellendi", $brand);
+			$row = update_district($id, $fields);
+			if($row){
+				return Response::success("İlçe Güncellendi", $row);
 			}
-			return Response::failure("Marka Güncellenemedi");
+			return Response::failure("İlçe Güncellenemedi");
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
@@ -70,21 +68,16 @@ class DistrictController extends Controller
 	function delete(Request $request, $id){
 		$exception = '';
 		try {
-			$brand = Brand::where('id', $id)->get()->first();
-			if($brand){
-				Brand::destroy($id);
-				BrandDescription::where('brand_id', $id)->delete();
-				return Response::success( "Marka silindi", $brand);
-			} else {
-				return Response::failure("Marka Bulunamadı");
+			if( $row = delete_district($id)){
+				return Response::success("İlçe Silindi", $row);
 			}
-			return BrandResponse::failure("Marka Silinemedi");
+			return Response::failure("İlçe Bulunamadı");
+
 		} catch(\Illuminate\Database\QueryException $ex){
 			$exception = $ex->getMessage();
 		} catch (Exception $ex){
 			$exception = $ex->getMessage();
 		}
-		return Response::exception( '$exception');
-
+		return Response::exception( $exception);
 	}
 }
